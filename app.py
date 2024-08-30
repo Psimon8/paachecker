@@ -5,6 +5,12 @@ import requests
 from lxml import html
 from io import BytesIO
 
+st.set_page_config(
+    layout="wide",
+    page_title="PAA Extract",
+    page_icon="🥝"
+)
+
 # Configuration des headers pour les requêtes
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
@@ -48,10 +54,7 @@ if st.button('Analyser les requêtes'):
             resultats = envoyer_requete_et_analyser(requete)
             for resultat in resultats:
                 if resultat not in resultats_et_infos:
-                    # Créer une nouvelle entrée pour chaque "Résultat Unique"
                     resultats_et_infos[resultat] = {'requetes': [], 'volumes': [], 'volume_total': 0}
-                
-                # Ajouter les requêtes et volumes associés à ce résultat unique
                 resultats_et_infos[resultat]['requetes'].append(requete)
                 resultats_et_infos[resultat]['volumes'].append(volume)
                 resultats_et_infos[resultat]['volume_total'] += volume
@@ -59,24 +62,19 @@ if st.button('Analyser les requêtes'):
         # Convertir les résultats en DataFrame pour affichage
         resultats_data = []
         for resultat_unique, infos in resultats_et_infos.items():
-            max_volume_index = infos['volumes'].index(max(infos['volumes']))  # Trouver l'index de la requête avec le volume maximum
-            mot_cle_associe = infos['requetes'][max_volume_index]  # Obtenir la requête avec le volume maximum
+            max_volume_index = infos['volumes'].index(max(infos['volumes']))
+            mot_cle_associe = infos['requetes'][max_volume_index]
             resultats_data.append({
                 'Résultat Unique': resultat_unique,
                 'Volume Total': infos['volume_total'],
-                'Requête': ', '.join(infos['requetes']),  # Afficher toutes les requêtes associées
-                'Mot clé Associé': mot_cle_associe  # La requête avec le plus grand volume
+                'Requête': ', '.join(infos['requetes']),
+                'Mot clé Associé': mot_cle_associe
             })
 
-        # Créer le DataFrame avec les résultats
         resultats_df = pd.DataFrame(resultats_data)
 
-        # Vérifier l'existence des colonnes et réorganiser l'ordre des colonnes
-        colonnes_attendues = ['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']
-        colonnes_presentes = [col for col in colonnes_attendues if col in resultats_df.columns]
-
-        # Utiliser uniquement les colonnes présentes dans le DataFrame
-        resultats_df = resultats_df[colonnes_presentes]
+        # Réorganiser l'ordre des colonnes
+        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']]
         
         st.dataframe(resultats_df)
 
