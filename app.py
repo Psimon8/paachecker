@@ -30,7 +30,7 @@ def envoyer_requete_et_analyser(query):
     return tree.xpath('//@data-q')
 
 # Interface utilisateur Streamlit
-st.title("Analyse de Requêtes et Volumes")
+st.title("📢 PAA Extractor")
 
 # Options d'importation des données
 option = st.radio("Comment souhaitez-vous importer les données?", ('Télécharger un fichier Excel', 'Copier-coller les valeurs'))
