@@ -68,10 +68,15 @@ if st.button('Analyser les requêtes'):
                 'Mot clé Associé': mot_cle_associe  # La requête avec le plus grand volume
             })
 
+        # Créer le DataFrame avec les résultats
         resultats_df = pd.DataFrame(resultats_data)
 
-        # Réorganiser l'ordre des colonnes
-        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']]
+        # Vérifier l'existence des colonnes et réorganiser l'ordre des colonnes
+        colonnes_attendues = ['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']
+        colonnes_presentes = [col for col in colonnes_attendues if col in resultats_df.columns]
+
+        # Utiliser uniquement les colonnes présentes dans le DataFrame
+        resultats_df = resultats_df[colonnes_presentes]
         
         st.dataframe(resultats_df)
 
