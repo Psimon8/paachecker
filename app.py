@@ -48,7 +48,10 @@ if st.button('Analyser les requêtes'):
             resultats = envoyer_requete_et_analyser(requete)
             for resultat in resultats:
                 if resultat not in resultats_et_infos:
+                    # Créer une nouvelle entrée pour chaque "Résultat Unique"
                     resultats_et_infos[resultat] = {'requetes': [], 'volumes': [], 'volume_total': 0}
+                
+                # Ajouter les requêtes et volumes associés à ce résultat unique
                 resultats_et_infos[resultat]['requetes'].append(requete)
                 resultats_et_infos[resultat]['volumes'].append(volume)
                 resultats_et_infos[resultat]['volume_total'] += volume
@@ -56,13 +59,13 @@ if st.button('Analyser les requêtes'):
         # Convertir les résultats en DataFrame pour affichage
         resultats_data = []
         for resultat_unique, infos in resultats_et_infos.items():
-            max_volume_index = infos['volumes'].index(max(infos['volumes']))
-            mot_cle_associe = infos['requetes'][max_volume_index]
+            max_volume_index = infos['volumes'].index(max(infos['volumes']))  # Trouver l'index de la requête avec le volume maximum
+            mot_cle_associe = infos['requetes'][max_volume_index]  # Obtenir la requête avec le volume maximum
             resultats_data.append({
                 'Résultat Unique': resultat_unique,
                 'Volume Total': infos['volume_total'],
-                'Requête': ', '.join(infos['requetes']),
-                'Mot clé Associé': mot_cle_associe
+                'Requête': ', '.join(infos['requetes']),  # Afficher toutes les requêtes associées
+                'Mot clé Associé': mot_cle_associe  # La requête avec le plus grand volume
             })
 
         resultats_df = pd.DataFrame(resultats_data)
