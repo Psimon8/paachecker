@@ -53,19 +53,23 @@ if st.button('Analyser les requêtes'):
         
         # Convertir les résultats en DataFrame pour affichage
         resultats_df = pd.DataFrame([
-            {'Requête': ', '.join(infos['requetes']), 'Résultat Unique': resultat_unique, 'Volume Total': infos['volume_total']}
+            {'Résultat Unique': resultat_unique, 'Volume Total': infos['volume_total'], 'Requête': ', '.join(infos['requetes'])}
             for resultat_unique, infos in resultats_et_infos.items()
         ])
         
+        # Réorganiser l'ordre des colonnes
+        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Requête']]
+        
         st.dataframe(resultats_df)
 
-        # Télécharger les résultats en fichier Excel
+        # Générer le fichier Excel pour téléchargement
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             resultats_df.to_excel(writer, index=False, sheet_name='Résultats')
             writer.save()
             fichier_excel = output.getvalue()
         
+        # Bouton pour télécharger le fichier Excel
         st.download_button(label="Télécharger les résultats en Excel", data=fichier_excel, file_name='resultats_analyse.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     else:
         st.error("Veuillez télécharger un fichier ou copier-coller des données avant de lancer l'analyse.")
