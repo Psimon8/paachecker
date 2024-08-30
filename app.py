@@ -66,9 +66,10 @@ if st.button('Analyser les requêtes'):
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             resultats_df.to_excel(writer, index=False, sheet_name='Résultats')
-            writer.save()
-            fichier_excel = output.getvalue()
-        
+            # writer.save() # Retirer cette ligne car le fichier est automatiquement enregistré à la sortie du 'with'
+
+        fichier_excel = output.getvalue()
+
         # Bouton pour télécharger le fichier Excel
         st.download_button(label="Télécharger les résultats en Excel", data=fichier_excel, file_name='resultats_analyse.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     else:
