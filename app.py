@@ -5,6 +5,13 @@ import requests
 from lxml import html
 from io import BytesIO
 
+st.set_page_config(
+    layout="wide",
+    page_title="PAA Sourcing",
+    page_icon="🥝"
+)
+
+
 # Configuration des headers pour les requêtes
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
