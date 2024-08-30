@@ -5,13 +5,6 @@ import requests
 from lxml import html
 from io import BytesIO
 
-st.set_page_config(
-    layout="wide",
-    page_title="PAA Sourcing",
-    page_icon="🥝"
-)
-
-
 # Configuration des headers pour les requêtes
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
@@ -31,7 +24,7 @@ def envoyer_requete_et_analyser(query):
     return tree.xpath('//@data-q')
 
 # Interface utilisateur Streamlit
-st.title("📣 People Also Ask")
+st.title("Analyse de Requêtes et Volumes")
 
 # Options d'importation des données
 option = st.radio("Comment souhaitez-vous importer les données?", ('Télécharger un fichier Excel', 'Copier-coller les valeurs'))
@@ -51,21 +44,31 @@ if st.button('Analyser les requêtes'):
         resultats_et_infos = {}
 
         for requete, volume in requetes_et_volumes:
+            volume = int(volume)  # Convertir le volume en entier pour les calculs
             resultats = envoyer_requete_et_analyser(requete)
             for resultat in resultats:
                 if resultat not in resultats_et_infos:
-                    resultats_et_infos[resultat] = {'requetes': [], 'volume_total': 0}
+                    resultats_et_infos[resultat] = {'requetes': [], 'volumes': [], 'volume_total': 0}
                 resultats_et_infos[resultat]['requetes'].append(requete)
-                resultats_et_infos[resultat]['volume_total'] += int(volume)
+                resultats_et_infos[resultat]['volumes'].append(volume)
+                resultats_et_infos[resultat]['volume_total'] += volume
         
         # Convertir les résultats en DataFrame pour affichage
-        resultats_df = pd.DataFrame([
-            {'Résultat Unique': resultat_unique, 'Volume Total': infos['volume_total'], 'Requête': ', '.join(infos['requetes'])}
-            for resultat_unique, infos in resultats_et_infos.items()
-        ])
-        
+        resultats_data = []
+        for resultat_unique, infos in resultats_et_infos.items():
+            max_volume_index = infos['volumes'].index(max(infos['volumes']))
+            mot_cle_associe = infos['requetes'][max_volume_index]
+            resultats_data.append({
+                'Résultat Unique': resultat_unique,
+                'Volume Total': infos['volume_total'],
+                'Requête': ', '.join(infos['requetes']),
+                'Mot clé Associé': mot_cle_associe
+            })
+
+        resultats_df = pd.DataFrame(resultats_data)
+
         # Réorganiser l'ordre des colonnes
-        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Requête']]
+        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']]
         
         st.dataframe(resultats_df)
 
@@ -73,7 +76,6 @@ if st.button('Analyser les requêtes'):
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             resultats_df.to_excel(writer, index=False, sheet_name='Résultats')
-            # writer.save() # Retirer cette ligne car le fichier est automatiquement enregistré à la sortie du 'with'
 
         fichier_excel = output.getvalue()
 
