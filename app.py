@@ -74,7 +74,12 @@ if st.button('Analyser les requêtes'):
         resultats_df = pd.DataFrame(resultats_data)
 
         # Réorganiser l'ordre des colonnes
-        resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']]
+        # Assurer que le DataFrame n'est pas vide avant de réorganiser
+        if not resultats_df.empty:
+            resultats_df = resultats_df[['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête']]
+        else:
+            # Créer un DataFrame vide avec les colonnes attendues si resultats_data était vide
+            resultats_df = pd.DataFrame(columns=['Résultat Unique', 'Volume Total', 'Mot clé Associé', 'Requête'])
         
         st.dataframe(resultats_df)
 
