@@ -25,7 +25,7 @@ def lire_requetes_et_volumes(fichier):
 
 # Fonction pour envoyer une requête et analyser la réponse
 def envoyer_requete_et_analyser(query):
-    response = requests.get(f'https://www.google.com/search?q={query}&start=0', headers=headers).text
+    response = requests.get(f'https://www.google.com/search?q={query}&start=', headers=headers).text
     tree = html.fromstring(response)
     return tree.xpath('//@data-q')
 
