@@ -27,7 +27,9 @@ def lire_requetes_et_volumes(fichier):
 def envoyer_requete_et_analyser(query):
     response = requests.get(f'https://www.google.com/search?q={query}&start=', headers=headers).text
     tree = html.fromstring(response)
-    return tree.xpath('//@data-q')
+    # Modifié pour cibler spécifiquement les questions PAA (People Also Ask)
+    # Les PAA sont souvent dans des divs avec data-bs-toggle="collapse" et la question dans data-q
+    return tree.xpath('//div[@data-bs-toggle="collapse"]/@data-q')
 
 # Interface utilisateur Streamlit
 st.title("📢 PAA Extractor")
